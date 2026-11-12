@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+# Generated log datasets
+data/small.log
+data/medium.log
+data/large.log
+
+# Profiling and generated output
+*.prof
+*_output.txt
