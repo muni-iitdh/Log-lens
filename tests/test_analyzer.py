@@ -148,6 +148,58 @@ class TestLogAnalyzer(unittest.TestCase):
 
         finally:
             os.remove(temp_path)
+    def test_out_of_order_flooding_detection(self):
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp:
+            for i in reversed(range(61)):
+                second = i % 60
+                minute = 30 + i // 60
+
+                temp.write(
+                    f'192.168.1.90 - - [11/Nov/2026:10:{minute:02d}:{second:02d} +0530] "GET /home HTTP/1.1" 200 1024 0.100\n'
+                )
+
+            temp_path = temp.name
+
+        try:
+            result = subprocess.run(
+                [sys.executable, "python/analyzer.py", temp_path],
+                capture_output=True,
+                text=True
+            )
+
+            self.assertEqual(result.returncode, 0)
+            self.assertIn("192.168.1.90 : 61 requests in 60 seconds - Suspicious", result.stdout)
+
+        finally:
+            os.remove(temp_path)
+    def test_unix_out_of_order_no_false_flooding(self):
+        with tempfile.NamedTemporaryFile(
+    mode="w", dir="data", delete=False
+    ) as temp:
+
+            for i in reversed(range(61)):
+                seconds = i * 2
+                minute = 30 + seconds // 60
+                second = seconds % 60
+
+                temp.write(
+                    f'192.168.1.91 - - [11/Nov/2026:10:{minute:02d}:{second:02d} +0530] "GET /home HTTP/1.1" 200 1024 0.100\n'
+                )
+
+            temp_path = temp.name
+        relative_path = os.path.relpath(temp_path).replace("\\", "/")
+        try:
+            result = subprocess.run(
+                ["bash", "unix/analyze.sh", relative_path],
+                capture_output=True,
+                text=True
+            )
+
+            self.assertEqual(result.returncode, 0)
+            self.assertIn("No request flooding detected.", result.stdout)
+
+        finally:
+            os.remove(temp_path)
     def test_sensitive_endpoint_detection(self):
         with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp:
             temp.write(

@@ -39,23 +39,7 @@ BEGIN {
 
     timestamp = mktime(dt[3] " " month[dt[2]] " " dt[1] " "  dt[4] " " dt[5] " " dt[6])
 
-    # Store requests per IP per second
-    if (!(ip in left_index)) {
-    left_index[ip] = 1
-}
-
-n = ++event_count[ip]
-event_time[ip, n] = timestamp
-
-while (timestamp - event_time[ip, left_index[ip]] >= 60) {
-    left_index[ip]++
-}
-
-window_count = n - left_index[ip] + 1
-
-if (window_count > max_flood[ip]) {
-    max_flood[ip] = window_count
-}
+        event_time[ip, ++event_count[ip]] = timestamp
 
     if (status == 401 || status == 404) {
         failed++
@@ -92,7 +76,31 @@ END {
     print "\nRequest Summary:"
     print "Total requests:", total
     print "Failed requests (401 + 404):", failed
+        # Sort timestamps and detect flooding
+    for (ip in event_count) {
+        delete sorted_times
 
+        for (i = 1; i <= event_count[ip]; i++) {
+            sorted_times[i] = event_time[ip, i]
+        }
+
+        asort(sorted_times)
+
+        left = 1
+        max_flood[ip] = 0
+
+        for (right = 1; right <= event_count[ip]; right++) {
+            while (sorted_times[right] - sorted_times[left] > 60) {
+                left++
+            }
+
+            window_count = right - left + 1
+
+            if (window_count > max_flood[ip]) {
+                max_flood[ip] = window_count
+            }
+        }
+    }
     # Request Flooding Detection
     print "\nRequest Flooding Detection:"
     found = 0

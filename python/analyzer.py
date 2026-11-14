@@ -70,7 +70,7 @@ with file:
             malformed_entries+=1
             continue
 
-        hour_minute = parsed_time.strftime("%H:%M")
+        hour_minute = parsed_time.strftime("%Y-%m-%d %H:%M")
         request_times_by_ip.setdefault(ip, []).append(parsed_time)
 
         ips.append(ip)

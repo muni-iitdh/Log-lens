@@ -162,3 +162,50 @@ Unix/AWK was approximately **22.8% faster** than Python in this experiment.
 Both implementations successfully processed all 100,085 entries and detected the five injected suspicious scenarios.
 
 These results are specific to the tested machine, dataset, and execution environment. They should not be directly compared with the earlier benchmark because that experiment used a different machine and a larger dataset.
+## 9. Python vs Unix Consistency Testing
+
+Both implementations were tested using the same sample dataset and a larger dataset containing 100,085 log entries.
+
+### Sample Dataset
+
+Both implementations produced matching results for:
+- Total requests: 10
+- Requests per IP
+- HTTP status code counts
+- Failed requests: 4
+- Suspicious activity detections
+
+### Large Dataset
+
+Both implementations were tested using `data/hasini_large.log`, containing 100,085 entries.
+
+The following results were verified:
+
+| Metric | Python | Unix/AWK |
+|---|---:|---:|
+| Total requests | 100,085 | 100,085 |
+| Unique IP addresses | 54 | 54 |
+| Failed requests | 10 | 10 |
+| HTTP 200 | 88,950 | 88,950 |
+| HTTP 301 | 11,120 | 11,120 |
+| HTTP 401 | 5 | 5 |
+| HTTP 404 | 5 | 5 |
+| HTTP 500 | 5 | 5 |
+
+All 54 individual IP request counts were compared programmatically and matched exactly.
+
+### Suspicious Activity Detection
+
+Both implementations detected all five injected scenarios:
+
+1. Request flooding: 192.168.1.100 — 70 requests in 60 seconds.
+2. Endpoint probing: 192.168.1.102 — 5 HTTP 404 responses.
+3. Brute force: 192.168.1.101 — 5 failed login attempts.
+4. Server error burst: 192.168.1.103 — 5 server errors.
+5. Sensitive endpoint access: 192.168.1.102 — 5 accesses.
+
+### Conclusion
+
+The consistency tests demonstrate that Python and Unix/AWK produce matching results for their shared analysis functionality on both the sample and large datasets.
+
+Python additionally reports metrics such as response-time statistics, HTTP method counts, and requests per minute, which are not currently included in the Unix implementation.
