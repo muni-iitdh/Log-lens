@@ -9,6 +9,8 @@ fi
 
 awk '
 BEGIN {
+    total = 0
+    failed = 0
     month["Jan"] = 1
     month["Feb"] = 2
     month["Mar"] = 3

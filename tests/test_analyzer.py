@@ -171,6 +171,50 @@ class TestLogAnalyzer(unittest.TestCase):
 
         finally:
             os.remove(temp_path)
+    def test_unix_analyzer_output(self):
+        result = subprocess.run(
+            ["bash", "unix/analyze.sh", "data/sample.log"],
+            capture_output=True,
+            text=True
+        )
 
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("Total requests: 10", result.stdout)
+        self.assertIn("200 : 6", result.stdout)
+        self.assertIn("401 : 1", result.stdout)
+        self.assertIn("404 : 3", result.stdout)
+        self.assertIn("Endpoint Probing Detection:", result.stdout)
+
+    def test_unix_missing_file(self):
+        result = subprocess.run(
+            ["bash", "unix/analyze.sh", "data/nonexistent.log"],
+            capture_output=True,
+            text=True
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("not found", result.stdout)
+    def test_unix_empty_log_file(self):
+        with tempfile.NamedTemporaryFile(
+            mode="w", dir="data", delete=False
+        ) as temp:
+            windows_path = temp.name
+
+        try:
+            relative_path = os.path.relpath(windows_path).replace("\\", "/")
+
+            result = subprocess.run(
+                ["bash", "unix/analyze.sh", relative_path],
+                capture_output=True,
+                text=True
+            )
+
+            self.assertEqual(result.returncode, 0)
+            self.assertIn("Total requests: 0", result.stdout)
+            self.assertIn("Failed requests (401 + 404): 0", result.stdout)
+            self.assertIn("No request flooding detected.", result.stdout)
+
+        finally:
+            os.remove(windows_path)
 if __name__ == "__main__":
     unittest.main()
