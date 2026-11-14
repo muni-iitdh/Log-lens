@@ -129,3 +129,36 @@ Both implementations successfully process the generated dataset and detect all i
 In the measured benchmark, Unix/AWK achieved a lower median execution time than Python. However, Python offers a more structured and extensible implementation.
 
 The project highlights the importance of log analysis in monitoring system activity, identifying potential security threats, and understanding application performance.
+## 8. Additional Benchmark — Hasini's Laptop
+
+An additional performance experiment was conducted on a second machine using a dataset containing 100,085 log entries.
+
+### Methodology
+
+- Both Python and Unix/AWK implementations processed the same input file.
+- Five benchmark runs were performed for each implementation.
+- Runs were alternated to reduce the effect of changing system conditions.
+- Execution time was measured using Git Bash's `time` command.
+- Report output was redirected to `/dev/null` to avoid terminal output overhead.
+- Median execution time was used for comparison.
+
+### Benchmark Results
+
+| Run | Python (seconds) | Unix/AWK (seconds) |
+|---|---:|---:|
+| 1 | 3.336 | 2.650 |
+| 2 | 3.090 | 2.470 |
+| 3 | 3.192 | 2.465 |
+| 4 | 3.132 | 2.271 |
+| 5 | 3.236 | 2.371 |
+| **Median** | **3.192** | **2.465** |
+
+### Performance Comparison
+
+Unix/AWK achieved a median execution time of 2.465 seconds, while Python took 3.192 seconds.
+
+Unix/AWK was approximately **22.8% faster** than Python in this experiment.
+
+Both implementations successfully processed all 100,085 entries and detected the five injected suspicious scenarios.
+
+These results are specific to the tested machine, dataset, and execution environment. They should not be directly compared with the earlier benchmark because that experiment used a different machine and a larger dataset.
