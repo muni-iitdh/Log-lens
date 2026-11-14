@@ -209,3 +209,38 @@ Both implementations detected all five injected scenarios:
 The consistency tests demonstrate that Python and Unix/AWK produce matching results for their shared analysis functionality on both the sample and large datasets.
 
 Python additionally reports metrics such as response-time statistics, HTTP method counts, and requests per minute, which are not currently included in the Unix implementation.
+## 10. Additional Benchmark — Sirisha's Laptop
+
+A performance experiment was conducted on another machine using a dataset containing 100,085 log entries.
+
+### Methodology
+
+- Both Python and Unix/AWK implementations processed the same input file, `data/sirisha_large.log`.
+- The dataset contained 100,000 normal requests and 85 injected suspicious requests.
+- One warm-up run was performed for each implementation.
+- Five benchmark runs were performed for each implementation.
+- Python and Unix/AWK were measured in alternating order.
+- Execution time was measured using PowerShell's `Measure-Command`.
+- Output was redirected to `$null` to avoid terminal display overhead.
+- Median execution time was used for comparison.
+
+### Benchmark Results
+
+| Run | Python (seconds) | Unix/AWK (seconds) |
+|---|---:|---:|
+| 1 | 2.3540 | 1.6704 |
+| 2 | 2.0553 | 1.6427 |
+| 3 | 2.3782 | 1.5890 |
+| 4 | 2.2668 | 1.5919 |
+| 5 | 2.2261 | 1.5839 |
+| **Median** | **2.2668** | **1.5919** |
+
+### Performance Comparison
+
+Unix/AWK achieved a median execution time of 1.5919 seconds, while Python took 2.2668 seconds.
+
+Unix/AWK was approximately **29.77% faster** than Python in this experiment, with a speedup of approximately 1.42×.
+
+Both implementations successfully processed all 100,085 entries and detected the five injected suspicious scenarios.
+
+These results are specific to Sirisha's machine, dataset, and execution environment. They should not be directly compared with benchmarks from other machines.
