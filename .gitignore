@@ -8,3 +8,4 @@ data/large.log
 # Profiling and generated output
 *.prof
 *_output.txt
+data/*_report.txt
