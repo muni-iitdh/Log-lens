@@ -191,3 +191,8 @@ else:
 print("\nRequests Per Minute:")
 for minute, count in sorted(minute_counts.items()):
     print(minute, ":", count)
+with open("data/status_categories.dat", "w") as output:
+    for category, count in status_categories.items():
+        output.write(f"{category} {count}\n")
+
+print("\nStatus category data exported to data/status_categories.dat")

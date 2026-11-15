@@ -1,5 +1,5 @@
 set terminal pngcairo size 1000,600
-set output 'data/status_categories.png'
+set output 'data/status_categories_generated.png'
 
 set title 'HTTP Status Category Distribution'
 set xlabel 'HTTP Status Category'
@@ -16,3 +16,4 @@ set key off
 
 plot 'data/status_categories.dat' using (column(0)):2 with boxes, \
      'data/status_categories.dat' using (column(0)):($2+0.2):(sprintf('%g',$2)) with labels notitle
+
