@@ -9,3 +9,4 @@ data/large.log
 *.prof
 *_output.txt
 data/*_report.txt
+data/profile.log

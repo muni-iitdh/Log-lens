@@ -13,16 +13,20 @@ The objective is to compare both approaches in terms of implementation, function
 
 ## 2. Features
 
-Both implementations analyze log files and provide the following information:
+The two implementations share the following core features:
 
-- Total number of requests.
+- Total number of valid requests.
 - Request counts by IP address.
 - HTTP status-code distribution.
-- HTTP method statistics.
-- Failed request counts.
-- Active users/IP addresses.
-- Response-time statistics, including minimum, maximum, mean, median, and 95th percentile.
 - Suspicious activity detection.
+
+The Python implementation additionally provides:
+
+- HTTP method statistics.
+- Response-time statistics, including minimum, maximum, mean, median, and 95th percentile.
+- Requests per minute.
+
+The Unix/AWK implementation focuses on efficient text processing and the shared request and suspicious-activity metrics.
 
 ### Suspicious Activity Detection
 
@@ -209,3 +213,61 @@ Both implementations detected all five injected scenarios:
 The consistency tests demonstrate that Python and Unix/AWK produce matching results for their shared analysis functionality on both the sample and large datasets.
 
 Python additionally reports metrics such as response-time statistics, HTTP method counts, and requests per minute, which are not currently included in the Unix implementation.
+
+## 10. Profiling and Bottleneck Analysis
+
+### Objective
+
+Python's built-in `cProfile` profiler was used to identify the functions consuming the most execution time in the Python log analyzer.
+
+### Profiling Environment
+
+| Property | Value |
+|---|---|
+| Python version | 3.12.10 |
+| Dataset | 100,085 log entries |
+| Profiling tool | Python `cProfile` |
+| Sorting method | Cumulative execution time |
+
+### Methodology
+
+A synthetic dataset was generated using the project's log generator:
+
+```bash
+python python/generate_logs.py 100000 data/profile.log
+```
+
+The analyzer was profiled using:
+
+```bash
+python -m cProfile -s cumulative python/analyzer.py data/profile.log > profile_output.txt
+```
+
+### Profiling Results
+
+| Function | Calls | Cumulative time (seconds) |
+|---|---:|---:|
+| Entire analyzer module | 1 | 6.525 |
+| `strptime()` | 100,085 | 3.439 |
+| `_strptime_datetime()` | 100,085 | 3.258 |
+| `strftime()` | 100,123 | 0.563 |
+| `statistics.mean()` | 1 | 0.130 |
+
+Note: `_strptime_datetime()` is called internally by `strptime()`. Their cumulative times overlap and must not be added together.
+
+### Bottleneck Identification
+
+Timestamp parsing was identified as the primary performance bottleneck.
+
+- `datetime.strptime()` was called 100,085 times.
+- Its cumulative execution time was 3.439 seconds, approximately 52.7% of the analyzer's total profiled time.
+- Timestamp formatting using `strftime()` consumed another 0.563 seconds.
+- List sorting and statistical calculations had comparatively smaller costs in this experiment.
+
+These results indicate that repeatedly parsing timestamps is an important optimization target.
+
+### Conclusion
+
+Profiling identified timestamp parsing as the most significant performance bottleneck in the Python implementation. This experiment establishes a baseline for evaluating future optimizations.
+
+The reported times are profiler measurements and should not be directly compared with the ordinary execution-time benchmarks in this report.
