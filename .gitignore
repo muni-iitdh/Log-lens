@@ -10,3 +10,5 @@ data/large.log
 *_output.txt
 data/*_report.txt
 data/profile.log
+data/generated.log
+data/status_categories_generated.png
