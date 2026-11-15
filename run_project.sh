@@ -61,7 +61,8 @@ echo ""
 echo "[4/5] Running functional tests..."
 
 "$PYTHON" -m unittest discover -s tests -v
-
+# Restore generated-log statistics after tests
+"$PYTHON" python/analyzer.py "$LOG_FILE" >/dev/null
 # Step 5: Generate visualization
 echo ""
 echo "[5/5] Generating Gnuplot visualization..."

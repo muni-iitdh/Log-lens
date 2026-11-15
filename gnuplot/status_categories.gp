@@ -6,9 +6,10 @@ set xlabel 'HTTP Status Category'
 set ylabel 'Number of Requests'
 
 set xrange [-0.5:4.5]
-set yrange [0:8]
+set yrange [0:*]
+
 set xtics ('1xx' 0, '2xx' 1, '3xx' 2, '4xx' 3, '5xx' 4)
-set ytics 1
+set ytics auto
 set grid ytics
 set boxwidth 0.6
 set style fill solid 0.7
